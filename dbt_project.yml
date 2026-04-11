@@ -27,11 +27,11 @@ models:
     01_stage:
       wealth:
         +database: "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"
-        +schema: WEALTH
+        +schema: WEALTH_ARCHIVE
         +materialized: table
       vendor_db:
         +database: "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"
-        +schema: VENDOR_DB
+        +schema: VENDOR_DB_ARCHIVE
         +materialized: table
 
     04_deployments:
