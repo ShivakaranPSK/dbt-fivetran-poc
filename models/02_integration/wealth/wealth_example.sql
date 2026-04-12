@@ -1,0 +1,1 @@
+select * from {{ ref('WEALTH_CUSTOMER_INVESTMENT_ACCOUNT') }}

@@ -34,6 +34,25 @@ models:
         +schema: VENDOR_DB_ARCHIVE
         +materialized: table
 
+    02_integration:
+      wealth:
+        Account:
+          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +schema: ACCOUNT
+          +materialized: table
+        Client:
+          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +schema: CLIENT
+          +materialized: table
+        Fund:
+          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +schema: FUND
+          +materialized: table
+        Transaction:
+          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +schema: TRANSACTION
+          +materialized: table
+
     04_deployments:
       +enabled: true
       +materialized: 'ephemeral'
