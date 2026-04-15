@@ -1,0 +1,46 @@
+version: 2
+
+sources:
+  - name: wealth
+    schema: wealth
+    tables:
+      - name: WEALTH_CUSTOMER
+        description: "Customer master table"
+        columns:
+          - name: CIF_NO
+            description: "Unique identifier for each customer"
+            tests:
+              - unique
+              - not_null
+
+          - name: ID_NO
+            description: "Permanent Account Number"
+            tests:
+              - unique
+              - not_null
+
+      - name: WEALTH_CUSTOMER_INVESTMENT_ACCOUNT
+        description: "Customer Account details table"
+        columns:
+          - name: ACCOUNT_NO
+            description: "Unique Account No for each account"
+            tests:
+              - unique
+              - not_null
+              
+          - name: CIF_NO
+            description: "Foreign key to customer table"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('wealth','WEALTH_CUSTOMER')
+                  field: CIF_NO
+
+      - name: WEALTH_FUND
+        description: "Fund master table"
+        columns:
+          - name: FUND_CODE
+            description: "Unique identifier for each fund"
+            tests:
+              - unique
+              - not_null
