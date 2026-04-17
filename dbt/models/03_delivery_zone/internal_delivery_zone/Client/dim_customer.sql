@@ -1,0 +1,55 @@
+{{ config(materialized='table') }}
+
+WITH base AS (
+    SELECT
+        CIF_NO,
+        ID_NO,
+        ID_TYPE,
+        CONCAT(FIRST_NAME, ' ', LAST_NAME) AS FULL_NAME,
+        MOBILE_NO,
+        EMAIL_ID,
+        MAIL_ADDR1,
+        MAIL_CITY,
+        MAIL_COUNTRY,
+        RISK_PROFILE_TYPE,
+        DW_LOAD_TIMESTAMP AS START_DATE
+    FROM {{ ref('WEALTH_CUSTOMER') }}
+),
+
+scd AS (
+    SELECT
+        *,
+        LEAD(START_DATE) OVER (
+            PARTITION BY CIF_NO
+            ORDER BY START_DATE
+        ) AS NEXT_START_DATE
+    FROM base
+)
+
+SELECT
+    ROW_NUMBER() OVER (ORDER BY CIF_NO, START_DATE) AS CUSTOMER_SK,
+
+    CIF_NO,
+    ID_NO,
+    ID_TYPE,
+    FULL_NAME,
+    MOBILE_NO,
+    EMAIL_ID,
+
+    CONCAT(MAIL_ADDR1, ', ', MAIL_CITY, ', ', MAIL_COUNTRY) AS MAILING_ADDRESS,
+    MAIL_CITY AS MAILING_CITY,
+    MAIL_COUNTRY AS MAILING_COUNTRY,
+
+    RISK_PROFILE_TYPE,
+
+    START_DATE,
+    DATEADD(SECOND, -1, NEXT_START_DATE) AS END_DATE,
+
+    CASE 
+        WHEN NEXT_START_DATE IS NULL THEN TRUE 
+        ELSE FALSE 
+    END AS IS_CURRENT,
+
+    CURRENT_TIMESTAMP() AS DW_LOAD_TIMESTAMP
+
+FROM scd

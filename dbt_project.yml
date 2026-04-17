@@ -13,10 +13,10 @@ seed-paths: ["dbt/seeds"]
 macro-paths: ["dbt/macros"]
 snapshot-paths: ["dbt/snapshots"]
 
-target-path: "target"  # directory which will store compiled SQL files
+target-path: "dbt/target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
-  - "target"
-  - "dbt_packages"
+  - "dbt/target"
+  - "dbt/dbt_packages"
 
 on-run-end:
   - "{{ log_model_runs(results) }}"
@@ -51,7 +51,24 @@ models:
           +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
           +schema: TRANSACTION
           +materialized: table
-
+    03_delivery_zone:
+      internal_delivery_zone:
+        Client:
+          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +schema: CLIENT
+          +materialized: table
+        Account:
+          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +schema: ACCOUNT
+          +materialized: table
+        Fund:
+          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +schema: FUND
+          +materialized: table
+        Transaction:
+          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +schema: TRANSACTION
+          +materialized: table
     04_deployments:
       +enabled: true
       +materialized: 'ephemeral'
