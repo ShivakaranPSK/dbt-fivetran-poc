@@ -3,7 +3,7 @@ version: '1.0.0'
 config-version: 2
 
 
-profile: 'default'
+profile: 'airflow_dbt_poc2'
 
 
 model-paths: ["dbt/models"]
@@ -24,51 +24,55 @@ on-run-end:
 models:
   dbt_snowflake_poc:
     01_stage:
+      +database: PROVIDER_SYSTEMS
       wealth:
-        +database: "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"
+        +database: PROVIDER_SYSTEMS
         +schema: WEALTH_ARCHIVE
         +materialized: table
       vendor_db:
-        +database: "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"
+        +database: PROVIDER_SYSTEMS
         +schema: VENDOR_DB_ARCHIVE
         +materialized: table
 
     02_integration:
+      +database: DATA_PLATFORM_INTEGRATION
       wealth:
         Account:
-          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +database: DATA_PLATFORM_INTEGRATION
           +schema: ACCOUNT
           +materialized: table
         Client:
-          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +database: DATA_PLATFORM_INTEGRATION
           +schema: CLIENT
           +materialized: table
         Fund:
-          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +database: DATA_PLATFORM_INTEGRATION
           +schema: FUND
           +materialized: table
         Transaction:
-          +database: "{{ env_var('DBT_ENV_DATAPLATFORM_INTEGRATIONS') }}"
+          +database: DATA_PLATFORM_INTEGRATION
           +schema: TRANSACTION
           +materialized: table
     03_delivery_zone:
+      +database: INTERNAL_DELIVERY_ZONE
       internal_delivery_zone:
         Client:
-          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +database: INTERNAL_DELIVERY_ZONE
           +schema: CLIENT
           +materialized: table
         Account:
-          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +database: INTERNAL_DELIVERY_ZONE
           +schema: ACCOUNT
           +materialized: table
         Fund:
-          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +database: INTERNAL_DELIVERY_ZONE
           +schema: FUND
           +materialized: table
         Transaction:
-          +database: "INTERNAL_DELIVERY_ZONE_DEV"
+          +database: INTERNAL_DELIVERY_ZONE
           +schema: TRANSACTION
           +materialized: table
     04_deployments:
+      +database: MONITOR
       +enabled: true
       +materialized: 'ephemeral'

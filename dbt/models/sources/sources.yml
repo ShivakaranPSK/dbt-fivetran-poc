@@ -1,6 +1,6 @@
 sources:
   - name: WEALTH
-    database:  "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"
+    database:  "PROVIDER_SYSTEMS_{{ env_var('DBT_TARGET', 'DEV') | upper }}"
     schema: WEALTH  
     tables:
       - name: CUSTOMER
@@ -10,7 +10,7 @@ sources:
       - name: TRANSACTIONS
 
   - name: VENDOR_DB
-    database: "{{ env_var('DBT_ENV_PROVIDER_SYSTEMS') }}"  
+    database: "PROVIDER_SYSTEMS_{{ env_var('DBT_TARGET', 'DEV') | upper }}" 
     schema: VENDOR_DB  
     tables:
       - name: CUSTOMER

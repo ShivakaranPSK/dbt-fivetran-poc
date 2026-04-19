@@ -1,10 +1,20 @@
 {% macro log_model_runs(results) %}
 
+    {# Safe environment detection #}
+    {% set env = target.name if target is defined and target.name is defined else 'unknown' %}
+
+    {# Optional: dynamic monitor DB #}
+    {% set monitor_db = 'MONITOR' if env == 'PROD' else 'MONITOR_' ~ env %}
+
+    {{ log("========== DBT RUN LOGGING ==========", info=True) }}
+    {{ log("Environment: " ~ env, info=True) }}
+    {{ log("Monitor DB: " ~ monitor_db, info=True) }}
+
     {% for res in results %}
 
         {% set node = res.node %}
 
-        {# ❌ Skip deployment models #}
+        {# Skip deployment models #}
         {% if 'deployment' in node.tags 
               or 'deployments' in node.original_file_path %}
 
@@ -12,12 +22,11 @@
 
         {% else %}
 
-            {# Capture error safely #}
+            {# Safe error capture #}
             {% set error_msg = res.message if res.message is not none else '' %}
-            {% set env = env_var('DBT_ENVIRONMENT', 'unknown') %}
 
             {% set insert_sql %}
-                insert into {{ env_var('DBT_ENV_MONITOR') }}.MONITOR.DBT_MODEL_RUN_LOG
+                insert into {{ monitor_db }}.MONITOR.DBT_MODEL_RUN_LOG
                 (
                     model_name,
                     status,
@@ -43,12 +52,16 @@
                 )
             {% endset %}
 
-            {{ log("Logging model: " ~ node.name ~ " | Status: " ~ res.status, info=True) }}
+            {{ log("Logging model: " ~ node.name ~ 
+                   " | Status: " ~ res.status ~ 
+                   " | Env: " ~ env, info=True) }}
 
             {% do run_query(insert_sql) %}
 
         {% endif %}
 
     {% endfor %}
+
+    {{ log("========== END DBT RUN LOGGING ==========", info=True) }}
 
 {% endmacro %}

@@ -2,6 +2,10 @@
 
     {% set cols = adapter.get_columns_in_relation(relation) %}
 
+    {% if cols | length == 0 %}
+        {{ return('*') }}
+    {% endif %}
+
     {% set col_names = [] %}
     {% for col in cols %}
         {% if col.name != col.name.upper() %}
